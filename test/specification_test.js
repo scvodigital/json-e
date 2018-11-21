@@ -21,7 +21,7 @@ suite('json-e', () => {
     } else {
       section.push(c);
     }
-  });
+  }, {json: true});
 
   before(() => tk.freeze(TEST_DATE));
   after(() => tk.reset());
@@ -29,6 +29,7 @@ suite('json-e', () => {
   _.forEach(spec, (C, s) => suite(s, function() {
     C.forEach(c => {
       test(c.title, () => {
+        global.THEONE = c.title === 'let with evaluated context';
         let result;
         try {
           result = jsone(c.template, c.context);

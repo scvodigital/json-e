@@ -63,111 +63,111 @@ let deleteMarker = {};
 
 let operators = {};
 
-operators.$eval = (template, context) => {
-  checkUndefinedProperties(template, ['\\$eval']);
+operators._eval = (template, context) => {
+  checkUndefinedProperties(template, ['\\_eval']);
 
-  if (!isString(template['$eval'])) {
-    throw new TemplateError('$eval must be given a string expression');
+  if (!isString(template['_eval'])) {
+    throw new TemplateError('_eval must be given a string expression');
   }
 
-  return interpreter.parse(template['$eval'], context);
+  return interpreter.parse(template['_eval'], context);
 };
 
-operators.$flatten = (template, context) => {
-  checkUndefinedProperties(template, ['\\$flatten']);
+operators._flatten = (template, context) => {
+  checkUndefinedProperties(template, ['\\_flatten']);
 
-  let value = render(template['$flatten'], context);
+  let value = render(template['_flatten'], context);
 
   if (!isArray(value)) {
-    throw new TemplateError('$flatten value must evaluate to an array');
+    throw new TemplateError('_flatten value must evaluate to an array');
   }
 
   return value.reduce((a, b) => a.concat(b), []);
 };
 
-operators.$flattenDeep = (template, context) => {
-  checkUndefinedProperties(template, ['\\$flattenDeep']);
+operators._flattenDeep = (template, context) => {
+  checkUndefinedProperties(template, ['\\_flattenDeep']);
 
-  let value = render(template['$flattenDeep'], context);
+  let value = render(template['_flattenDeep'], context);
 
   if (!isArray(value)) {
-    throw new TemplateError('$flattenDeep value must evaluate to an array');
+    throw new TemplateError('_flattenDeep value must evaluate to an array');
   }
 
   return flattenDeep(value);
 };
 
-operators.$fromNow = (template, context) => {
-  checkUndefinedProperties(template, ['\\$fromNow', 'from']);
+operators._fromNow = (template, context) => {
+  checkUndefinedProperties(template, ['\\_fromNow', 'from']);
 
-  let value = render(template['$fromNow'], context);
+  let value = render(template['_fromNow'], context);
   let reference = context.now;
   if (template['from']) {
     reference = render(template['from'], context);
   }
   if (!isString(value)) {
-    throw new TemplateError('$fromNow expects a string');
+    throw new TemplateError('_fromNow expects a string');
   }
   return fromNow(value, reference);
 };
 
-operators.$if = (template, context) => {
-  checkUndefinedProperties(template, ['\\$if', 'then', 'else']);
+operators._if = (template, context) => {
+  checkUndefinedProperties(template, ['\\_if', 'then', 'else']);
 
-  if (!isString(template['$if'])) {
-    throw new TemplateError('$if can evaluate string expressions only');
+  if (!isString(template['_if'])) {
+    throw new TemplateError('_if can evaluate string expressions only');
   }
-  if (isTruthy(interpreter.parse(template['$if'], context))) {
+  if (isTruthy(interpreter.parse(template['_if'], context))) {
     return template.hasOwnProperty('then') ? render(template.then, context) : deleteMarker;
   }
   return template.hasOwnProperty('else') ? render(template.else, context) : deleteMarker;
 };
 
-operators.$json = (template, context) => {
-  checkUndefinedProperties(template, ['\\$json']);
+operators._json = (template, context) => {
+  checkUndefinedProperties(template, ['\\_json']);
 
-  return stringify(render(template['$json'], context));
+  return stringify(render(template['_json'], context));
 };
 
-operators.$let = (template, context) => {
-  checkUndefinedProperties(template, ['\\$let', 'in']);
+operators._let = (template, context) => {
+  checkUndefinedProperties(template, ['\\_let', 'in']);
 
-  if (!isObject(template['$let'])) {
-    throw new TemplateError('$let value must be an object');
+  if (!isObject(template['_let'])) {
+    throw new TemplateError('_let value must be an object');
   }
   let variables = {};
-  Object.keys(template['$let']).forEach(key => {
-    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)) {
-      throw new TemplateError('top level keys of $let must follow /[a-zA-Z_][a-zA-Z0-9_]*/');
+  Object.keys(template['_let']).forEach(key => {
+    if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(key)) {
+      throw new TemplateError('top level keys of _let must follow /[a-zA-Z_][a-zA-Z0-9_]*/');
     }
-    variables[key] = render(template['$let'][key], context);
+    variables[key] = render(template['_let'][key], context);
   });
 
   var child_context = Object.assign(context, variables);
 
   if (template.in == undefined) {
-    throw new TemplateError('$let operator requires an `in` clause');
+    throw new TemplateError('_let operator requires an `in` clause');
   }
 
   return render(template.in, child_context);
 };
 
-operators.$map = (template, context) => {
+operators._map = (template, context) => {
   EACH_RE = 'each\\(([a-zA-Z_][a-zA-Z0-9_]*)(,\\s*([a-zA-Z_][a-zA-Z0-9_]*))?\\)';
-  checkUndefinedProperties(template, ['\\$map', EACH_RE]);
-  let value = render(template['$map'], context);
+  checkUndefinedProperties(template, ['\\_map', EACH_RE]);
+  let value = render(template['_map'], context);
   if (!isArray(value) && !isObject(value)) {
-    throw new TemplateError('$map value must evaluate to an array or object');
+    throw new TemplateError('_map value must evaluate to an array or object');
   }
 
   if (Object.keys(template).length !== 2) {
-    throw new TemplateError('$map must have exactly two properties');
+    throw new TemplateError('_map must have exactly two properties');
   }
 
-  let eachKey = Object.keys(template).filter(k => k !== '$map')[0];
+  let eachKey = Object.keys(template).filter(k => k !== '_map')[0];
   let match = /^each\(([a-zA-Z_][a-zA-Z0-9_]*)(,\s*([a-zA-Z_][a-zA-Z0-9_]*))?\)$/.exec(eachKey);
   if (!match) {
-    throw new TemplateError('$map requires each(identifier) syntax');
+    throw new TemplateError('_map requires each(identifier) syntax');
   }
 
   let x = match[1];
@@ -183,7 +183,7 @@ operators.$map = (template, context) => {
       let args = typeof i !== 'undefined' ? {[x]: v.val, [i]: v.key} : {[x]: v};
       eachValue = render(each, Object.assign({}, context, args));
       if (!isObject(eachValue)) {
-        throw new TemplateError(`$map on objects expects each(${x}) to evaluate to an object`);
+        throw new TemplateError(`_map on objects expects each(${x}) to evaluate to an object`);
       } 
       return eachValue;
     }).filter(v => v !== deleteMarker);
@@ -197,15 +197,15 @@ operators.$map = (template, context) => {
   }
 };
 
-operators.$match = (template, context) => {
-  checkUndefinedProperties(template, ['\\$match']);
+operators._match = (template, context) => {
+  checkUndefinedProperties(template, ['\\_match']);
 
-  if (!isObject(template['$match'])) {
-    throw new TemplateError('$match can evaluate objects only');
+  if (!isObject(template['_match'])) {
+    throw new TemplateError('_match can evaluate objects only');
   }
 
   const result = [];
-  const conditions = template['$match'];
+  const conditions = template['_match'];
 
   for (let condition of Object.keys(conditions).sort()) {
     if (isTruthy(interpreter.parse(condition, context))) {
@@ -216,25 +216,25 @@ operators.$match = (template, context) => {
   return result;
 };
 
-operators.$merge = (template, context) => {
-  checkUndefinedProperties(template, ['\\$merge']);
+operators._merge = (template, context) => {
+  checkUndefinedProperties(template, ['\\_merge']);
 
-  let value = render(template['$merge'], context);
+  let value = render(template['_merge'], context);
 
   if (!isArray(value) || value.some(o => !isObject(o))) {
-    throw new TemplateError('$merge value must evaluate to an array of objects');
+    throw new TemplateError('_merge value must evaluate to an array of objects');
   }
 
   return Object.assign({}, ...value);
 };
 
-operators.$mergeDeep = (template, context) => {
-  checkUndefinedProperties(template, ['\\$mergeDeep']);
+operators._mergeDeep = (template, context) => {
+  checkUndefinedProperties(template, ['\\_mergeDeep']);
 
-  let value = render(template['$mergeDeep'], context);
+  let value = render(template['_mergeDeep'], context);
 
   if (!isArray(value) || value.some(o => !isObject(o))) {
-    throw new TemplateError('$mergeDeep value must evaluate to an array of objects');
+    throw new TemplateError('_mergeDeep value must evaluate to an array of objects');
   }
 
   if (value.length === 0) {
@@ -263,26 +263,26 @@ operators.$mergeDeep = (template, context) => {
   return value.reduce(merge, value.shift());
 };
 
-operators.$reverse = (template, context) => {
-  checkUndefinedProperties(template, ['\\$reverse']);
+operators._reverse = (template, context) => {
+  checkUndefinedProperties(template, ['\\_reverse']);
 
-  let value = render(template['$reverse'], context);
+  let value = render(template['_reverse'], context);
 
   if (!isArray(value)) {
-    throw new TemplateError('$reverse value must evaluate to an array of objects');
+    throw new TemplateError('_reverse value must evaluate to an array of objects');
   }
   return value.reverse();
 };
 
-operators.$sort = (template, context) => {
+operators._sort = (template, context) => {
   BY_RE = 'by\\(([a-zA-Z_][a-zA-Z0-9_]*)\\)';
-  checkUndefinedProperties(template, ['\\$sort', BY_RE]);
-  let value = render(template['$sort'], context);
+  checkUndefinedProperties(template, ['\\_sort', BY_RE]);
+  let value = render(template['_sort'], context);
   if (!isArray(value)) {
-    throw new TemplateError('$sorted values to be sorted must have the same type');
+    throw new TemplateError('_sorted values to be sorted must have the same type');
   }
 
-  let byKey = Object.keys(template).filter(k => k !== '$sort')[0];
+  let byKey = Object.keys(template).filter(k => k !== '_sort')[0];
   let match = /^by\(([a-zA-Z_][a-zA-Z0-9_]*)\)$/.exec(byKey);
   let by;
   if (match) {
@@ -296,7 +296,7 @@ operators.$sort = (template, context) => {
   } else {
     let needBy = value.some(v => isArray(v) || isObject(v));
     if (needBy) {
-      throw new TemplateError('$sorted values to be sorted must have the same type');
+      throw new TemplateError('_sorted values to be sorted must have the same type');
     }
     by = value => value;
   }
@@ -309,7 +309,7 @@ operators.$sort = (template, context) => {
     let eltType = typeof tagged[0][0];
     if (eltType !== 'number' && eltType !== 'string' ||
         tagged.some(e => eltType !== typeof e[0])) {
-      throw new TemplateError('$sorted values to be sorted must have the same type');
+      throw new TemplateError('_sorted values to be sorted must have the same type');
     }
   }
 
@@ -370,10 +370,10 @@ let render = (template, context) => {
       throw err;
     }
     if (value !== deleteMarker) {
-      if (key.startsWith('$$')) {
+      if (key.startsWith('__')) {
         key = key.substr(1);
-      } else if (/^\$[a-zA-Z][a-zA-Z0-9]*$/.test(key)) {
-        throw new TemplateError('$<identifier> is reserved; use $$<identifier>');
+      } else if (/^_[a-zA-Z][a-zA-Z0-9]*$/.test(key)) {
+        throw new TemplateError('_<identifier> is reserved; use __<identifier>');
       } else {
         key = interpolate(key, context);
       }
