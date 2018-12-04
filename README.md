@@ -1,6 +1,6 @@
 # NOTICE ABOUT THIS FORK
 
-This is just a fork of the original with a fundamental change. SCVO are using JSON-e templates in data that is stored in a Firebase Realtime Database which does not support `$` signs in key names. This is a bit of a problem as `$`s denote the beginning of all JSON-e operators. This fork has replaced the `$` with `_`. Everything else is the same. All documentation makes sense when you replace `$` for `_`, and `$$` for `__`. 
+This is just a fork of the original with a fundamental change. SCVO are using JSON-e templates in data that is stored in a Firebase Realtime Database which does not support `$` signs in key names. This is a bit of a problem as `$`s denote the beginning of all JSON-e operators. This fork has replaced the `$` with `_`. Everything else is the same. All documentation makes sense when you replace `$` with `_`, and `$$` with `__` in key names. 
   
 I have done my best to make sure all unit tests still pass and  I will try to maintain it and keep it up-to-date with upstream. Hope the peeps over at taskcluster are cool with this, it's a really neat project and very useful for what we are doing.
 
